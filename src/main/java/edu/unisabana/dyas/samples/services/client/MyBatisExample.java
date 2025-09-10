@@ -16,15 +16,17 @@
  */
 package edu.unisabana.dyas.samples.services.client;
 
-
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.List;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import edu.unisabana.dyas.samples.entities.Cliente;
+import edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper;
 
 /**
  *
@@ -59,24 +61,28 @@ public class MyBatisExample {
      */
     public static void main(String args[]) throws SQLException {
         SqlSessionFactory sessionfact = getSqlSessionFactory();
-
         SqlSession sqlss = sessionfact.openSession();
 
-        
-        //Crear el mapper y usarlo: 
-        //ClienteMapper cm=sqlss.getMapper(ClienteMapper.class)
-        //cm...
-        
-        
-        
-        sqlss.commit();
-        
-        
-        sqlss.close();
-
-        
-        
+        try {
+            //Crear el mapper y usarlo: 
+            ClienteMapper cm = sqlss.getMapper(ClienteMapper.class);
+            
+            // Probar el método consultarClientes()
+            System.out.println("=== CONSULTANDO TODOS LOS CLIENTES ===");
+            List<Cliente> clientes = cm.consultarClientes();
+            
+            for (Cliente cliente : clientes) {
+                System.out.println(cliente);
+            }
+            
+            sqlss.commit();
+            
+        } catch (Exception e) {
+            System.err.println("Error al consultar clientes: " + e.getMessage());
+            e.printStackTrace();
+            sqlss.rollback();
+        } finally {
+            sqlss.close();
+        }
     }
-
-
 }

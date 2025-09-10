@@ -33,7 +33,7 @@ En este taller se utilizará un 'framework' de persistencia. La base de datos qu
         c.direccion,
         c.email,
         c.vetado,
-        ir.id ,
+        ir.ITEMS_id ,
         ir.fechainiciorenta ,
         ir.fechafinrenta ,
         i.id ,

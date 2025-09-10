@@ -34,6 +34,12 @@
             <artifactId>mybatis</artifactId>
             <version>3.4.5</version> <!-- La versión puede variar -->
         </dependency>
+        <!-- DEPENDENCIA DE SQLITE AGREGADA -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.36.0.3</version>
+        </dependency>
 
     </dependencies>
     
@@ -83,7 +89,6 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <!-- Especifica la clase principal -->
                             <mainClass>edu.unisabana.dyas.samples.services.client.MyBatisExample</mainClass>
                         </manifest>
                     </archive>

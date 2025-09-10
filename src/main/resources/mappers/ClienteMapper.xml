@@ -5,6 +5,68 @@
   
 <mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper">
 
+    <!-- ResultMap para TipoItem -->
+    <resultMap type='TipoItem' id='TipoItemResult'>
+        <id property='id' column='ti_id'/>
+        <result property='descripcion' column='ti_descripcion'/>
+    </resultMap>
 
+    <!-- ResultMap para Item -->
+    <resultMap type='Item' id='ItemResult'>
+        <id property='id' column='i_id'/>
+        <result property='nombre' column='i_nombre'/>
+        <result property='descripcion' column='i_descripcion'/>
+        <result property='fechaLanzamiento' column='i_fechalanzamiento'/>
+        <result property='tarifaxDia' column='i_tarifaxdia'/>
+        <result property='formatoRenta' column='i_formatorenta'/>
+        <result property='genero' column='i_genero'/>
+        <association property="tipo" javaType="TipoItem" resultMap="TipoItemResult"></association>
+    </resultMap>
+
+    <!-- ResultMap para ItemRentado -->
+    <resultMap type='ItemRentado' id='ItemRentadoResult'>
+        <id property='id' column='ir_items_id'/>
+        <result property='fechainiciorenta' column='ir_fechainiciorenta'/>
+        <result property='fechafinrenta' column='ir_fechafinrenta'/>
+        <association property="item" javaType="Item" resultMap="ItemResult"></association>
+    </resultMap>
+
+    <!-- ResultMap para Cliente -->
+    <resultMap type='Cliente' id='ClienteResult'>
+        <id property='documento' column='documento'/>
+        <result property='nombre' column='nombre'/>
+        <result property='telefono' column='telefono'/>
+        <result property='direccion' column='direccion'/>
+        <result property='email' column='email'/>
+        <result property='vetado' column='vetado'/>
+        <collection property='rentados' ofType='ItemRentado' resultMap='ItemRentadoResult'></collection>
+    </resultMap>
+
+    <select parameterType="map" id="consultarClientes" resultMap="ClienteResult">
+        select
+        c.nombre,
+        c.documento,
+        c.telefono,
+        c.direccion,
+        c.email,
+        c.vetado,
+        ir.CLIENTES_documento as ir_clientes_documento,
+        ir.ITEMS_id as ir_items_id,
+        datetime(ir.fechainiciorenta) as ir_fechainiciorenta,
+        datetime(ir.fechafinrenta) as ir_fechafinrenta,
+        i.id as i_id,
+        i.nombre as i_nombre,
+        i.descripcion as i_descripcion,
+        datetime(i.fechalanzamiento) as i_fechalanzamiento,
+        i.tarifaxdia as i_tarifaxdia,
+        i.formatorenta as i_formatorenta,
+        i.genero as i_genero,        
+        ti.id as ti_id,
+        ti.descripcion as ti_descripcion
+        FROM VI_CLIENTES as c 
+        left join VI_ITEMRENTADO as ir on c.documento=ir.CLIENTES_documento 
+        left join VI_ITEMS as i on ir.ITEMS_id=i.id 
+        left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id 
+    </select>
           	
 </mapper>
