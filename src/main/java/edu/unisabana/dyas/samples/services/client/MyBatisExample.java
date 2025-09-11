@@ -19,6 +19,7 @@ package edu.unisabana.dyas.samples.services.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.List;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -26,7 +27,10 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import edu.unisabana.dyas.samples.entities.Cliente;
+import edu.unisabana.dyas.samples.entities.Item;
+import edu.unisabana.dyas.samples.entities.TipoItem;
 import edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper;
+import edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ItemMapper;
 
 /**
  *
@@ -64,10 +68,11 @@ public class MyBatisExample {
         SqlSession sqlss = sessionfact.openSession();
 
         try {
-            //Crear el mapper y usarlo: 
+            //Crear los mappers
             ClienteMapper cm = sqlss.getMapper(ClienteMapper.class);
+            ItemMapper im = sqlss.getMapper(ItemMapper.class);
             
-            // Probar el método consultarClientes()
+            //PRUEBA 1: Consultar TODOS los clientes
             System.out.println("=== CONSULTANDO TODOS LOS CLIENTES ===");
             List<Cliente> clientes = cm.consultarClientes();
             
@@ -75,10 +80,109 @@ public class MyBatisExample {
                 System.out.println(cliente);
             }
             
+            System.out.println("\n" + "=".repeat(60) + "\n");
+            
+            //PRUEBA 2: Consultar UN cliente específico
+            System.out.println("=== CONSULTANDO CLIENTE ESPECIFICO ===");
+            
+            Cliente cliente1 = cm.consultarCliente(123456789);
+            if (cliente1 != null) {
+                System.out.println("ENCONTRADO: " + cliente1);
+            } else {
+                System.out.println("NO ENCONTRADO");
+            }
+            
+            System.out.println("\n" + "=".repeat(60) + "\n");
+            
+            //PRUEBA 3: Consultar TODOS los items
+            System.out.println("=== CONSULTANDO TODOS LOS ITEMS ===");
+            List<Item> items = im.consultarItems();
+            
+            for (Item item : items) {
+                System.out.println(item);
+            }
+            
+            System.out.println("\n" + "=".repeat(60) + "\n");
+            
+            //PRUEBA 4: Consultar UN item específico
+            System.out.println("=== CONSULTANDO ITEM ESPECÍFICO ===");
+            
+            Item item1 = im.consultarItem(1);
+            if (item1 != null) {
+                System.out.println("ITEM ENCONTRADO: " + item1);
+            } else {
+                System.out.println("ITEM NO ENCONTRADO");
+            }
+            
+            System.out.println("\n" + "=".repeat(60) + "\n");
+            
+            //PRUEBA 5: Insertar un nuevo item
+            System.out.println("=== INSERTANDO NUEVO ITEM ===");
+            
+            // Crear un nuevo TipoItem (Electrónico)
+            TipoItem tipoElectronico = new TipoItem();
+            tipoElectronico.setID(1); // Usar el tipo Electrónico que ya existe
+            tipoElectronico.setDescripcion("Electrónico");
+            
+            // Crear un nuevo Item
+            Item nuevoItem = new Item();
+            nuevoItem.setId(4); // ID que no existe en la BD
+            nuevoItem.setNombre("Smartphone");
+            nuevoItem.setDescrpcion("Smartphone última generación");
+            nuevoItem.setFechaLanzamiento(Date.valueOf("2024-01-01"));
+            nuevoItem.setTarifaxDia(3000);
+            nuevoItem.setFormatoRenta("Diario");
+            nuevoItem.setGenero("Tecnología");
+            nuevoItem.setTipo(tipoElectronico);
+            
+            System.out.println("Insertando nuevo item: " + nuevoItem.getNombre());
+            im.insertarItem(nuevoItem);
+            System.out.println("Item insertado exitosamente!");
+            
+            System.out.println("\n" + "=".repeat(60) + "\n");
+            
+            //PRUEBA 6: Verificar que el item se insertó
+            System.out.println("=== VERIFICANDO ITEM INSERTADO ===");
+            Item itemInsertado = im.consultarItem(4);
+            if (itemInsertado != null) {
+                System.out.println("ITEM VERIFICADO: " + itemInsertado);
+            } else {
+                System.out.println("ITEM NO SE INSERTÓ CORRECTAMENTE");
+            }
+            
+            System.out.println("\n" + "=".repeat(60) + "\n");
+            
+            //PRUEBA 7: Agregar nueva renta con el item insertado
+            System.out.println("=== AGREGANDO RENTA CON NUEVO ITEM ===");
+            
+            Date fechaInicio = Date.valueOf("2024-09-16");
+            Date fechaFin = Date.valueOf("2024-09-21");
+            
+            System.out.println("Agregando renta del nuevo item (Smartphone) a Pedro Rodriguez:");
+            cm.agregarItemRentadoACliente(555555555, 4, fechaInicio, fechaFin);
+            System.out.println("Renta agregada exitosamente!");
+            
+            System.out.println("\n" + "=".repeat(60) + "\n");
+            
+            //PRUEBA 8: Verificar todo el flujo completo
+            System.out.println("=== VERIFICACION FINAL - TODOS LOS ITEMS ===");
+            List<Item> itemsFinales = im.consultarItems();
+            
+            for (Item item : itemsFinales) {
+                System.out.println(item);
+            }
+            
+            System.out.println("\n=== VERIFICACION FINAL - TODOS LOS CLIENTES ===");
+            List<Cliente> clientesFinales = cm.consultarClientes();
+            
+            for (Cliente cliente : clientesFinales) {
+                System.out.println(cliente);
+            }
+            
             sqlss.commit();
             
         } catch (Exception e) {
-            System.err.println("Error al consultar clientes: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
             sqlss.rollback();
         } finally {

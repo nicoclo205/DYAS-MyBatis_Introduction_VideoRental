@@ -12,20 +12,20 @@ import edu.unisabana.dyas.samples.entities.Cliente;
  */
 public interface ClienteMapper {
     
-    public Cliente consultarCliente(int id); 
+    public Cliente consultarCliente(@Param("idcli") int id); 
     
     /**
      * Registrar un nuevo item rentado asociado al cliente identificado
      * con 'idc' y relacionado con el item identificado con 'idi'
-     * @param id
-     * @param idit
-     * @param fechainicio
-     * @param fechafin 
+     * @param id documento del cliente
+     * @param idit id del item a rentar
+     * @param fechainicio fecha de inicio de la renta
+     * @param fechafin fecha de fin de la renta
      */
-    public void agregarItemRentadoACliente(int id, 
-            int idit, 
-            Date fechainicio,
-            Date fechafin);
+    public void agregarItemRentadoACliente(@Param("idc") int id, 
+            @Param("idi") int idit, 
+            @Param("fechainicio") Date fechainicio,
+            @Param("fechafin") Date fechafin);
 
     /**
      * Consultar todos los clientes

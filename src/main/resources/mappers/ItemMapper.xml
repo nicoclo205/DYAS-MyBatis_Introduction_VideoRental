@@ -5,7 +5,61 @@
   
 <mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ItemMapper">
 
+    <!-- ResultMap para TipoItem (movido desde ClienteMapper) -->
+    <resultMap type='TipoItem' id='TipoItemResult'>
+        <id property='id' column='ti_id'/>
+        <result property='descripcion' column='ti_descripcion'/>
+    </resultMap>
 
-    
+    <!-- ResultMap para Item (movido desde ClienteMapper) -->
+    <resultMap type='Item' id='ItemResult'>
+        <id property='id' column='i_id'/>
+        <result property='nombre' column='i_nombre'/>
+        <result property='descripcion' column='i_descripcion'/>
+        <result property='fechaLanzamiento' column='i_fechalanzamiento'/>
+        <result property='tarifaxDia' column='i_tarifaxdia'/>
+        <result property='formatoRenta' column='i_formatorenta'/>
+        <result property='genero' column='i_genero'/>
+        <association property="tipo" javaType="TipoItem" resultMap="TipoItemResult"></association>
+    </resultMap>
+
+    <!-- Consultar todos los items -->
+    <select parameterType="map" id="consultarItems" resultMap="ItemResult">
+        select
+        i.id as i_id,
+        i.nombre as i_nombre,
+        i.descripcion as i_descripcion,
+        datetime(i.fechalanzamiento) as i_fechalanzamiento,
+        i.tarifaxdia as i_tarifaxdia,
+        i.formatorenta as i_formatorenta,
+        i.genero as i_genero,        
+        ti.id as ti_id,
+        ti.descripcion as ti_descripcion
+        FROM VI_ITEMS as i 
+        left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id 
+    </select>
+
+    <!-- Consultar un item específico por ID -->
+    <select parameterType="map" id="consultarItem" resultMap="ItemResult">
+        select
+        i.id as i_id,
+        i.nombre as i_nombre,
+        i.descripcion as i_descripcion,
+        datetime(i.fechalanzamiento) as i_fechalanzamiento,
+        i.tarifaxdia as i_tarifaxdia,
+        i.formatorenta as i_formatorenta,
+        i.genero as i_genero,        
+        ti.id as ti_id,
+        ti.descripcion as ti_descripcion
+        FROM VI_ITEMS as i 
+        left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id 
+        WHERE i.id = #{iditem}
+    </select>
+
+    <!-- Insertar un nuevo item -->
+    <insert parameterType="map" id="insertarItem">
+        INSERT INTO VI_ITEMS (id, nombre, descripcion, fechalanzamiento, tarifaxdia, formatorenta, genero, TIPOITEM_id)
+        VALUES (#{item.id}, #{item.nombre}, #{item.descripcion}, #{item.fechaLanzamiento}, #{item.tarifaxDia}, #{item.formatoRenta}, #{item.genero}, #{item.tipo.id})
+    </insert>
     
 </mapper>
